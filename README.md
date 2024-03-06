@@ -1,5 +1,5 @@
 # About SAQE (Sense-Aware Query Expansion)
-An out-of-the-box, corpus-agnostic query expansion tool for lexical retrieval systems.
+`saqe` is an out-of-the-box, corpus-agnostic query expansion tool for lexical retrieval systems.
 
 This tool uses `WordNet` as its knowledge base. For word-sense disambiguation, it leverages `SimCSE` to encode query 
 text and sense-specific WordNet textual content into embeddings, and compute semantic similarity between them. 
@@ -10,8 +10,8 @@ non-overlapping, WordNet-meaningful terms).
 In a Python 3.8 virtual environment, install the `saqe` package and download its required artifacts.
 ```shell
 python setup.py install
-python3 -m textblob.download_corpora
-python3 -m spacy download en_core_web_lg
+python -m textblob.download_corpora
+python -m spacy download en_core_web_lg
 ```
 
 # Code Examples
