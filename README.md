@@ -8,8 +8,8 @@
 
 # About SAQE (Sense-Aware Query Expansion)
 `saqe` is an out-of-the-box, corpus-agnostic query expansion tool for lexical retrieval systems. It uses 
-[WordNet](https://wordnet.princeton.edu/) as its knowledge base. For word-sense disambiguation, it uses a 
-language model of your choice or [SimCSE](https://github.com/princeton-nlp/SimCSE) by default to encode query text and 
+[WordNet](https://wordnet.princeton.edu/) as its knowledge base. For word-sense disambiguation, it uses a user-inputted 
+language model or [SimCSE](https://github.com/princeton-nlp/SimCSE) by default to encode query text and 
 sense-specific WordNet textual content into embeddings, and compute the semantic similarity between them. Furthermore, 
 it leverages `NLTK`, `spaCy`, and `TextBlob` to optimize query term tokenization (the least number of 
 non-overlapping, WordNet-meaningful terms).
