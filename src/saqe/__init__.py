@@ -1,13 +1,19 @@
 import re
 from typing import List, Dict, Tuple
 
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from nltk.corpus import wordnet, stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import wordpunct_tokenize
 from numpy import argmax
+from sklearn.metrics.pairwise import cosine_similarity
 from simcse import SimCSE
 import spacy
 from textblob import TextBlob
+import torch
+
+
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 class NounPhraseExtractor(object):
@@ -37,6 +43,16 @@ class NounPhraseExtractor(object):
         return " ".join(split_noun_phrase)
 
 
+class TextSimilarity(object):
+    def __init__(self, model_name: str):
+        self._model = HuggingFaceEmbeddings(model_name=model_name, model_kwargs={'device': DEVICE})
+
+    def similarity(self, query: str, corpus: List[str]):
+        corpus_embeddings = self._model.embed_documents(corpus)
+        query_embedding = [self._model.embed_query(query)]
+        return cosine_similarity(query_embedding, corpus_embeddings)
+
+
 class SAQE(object):
     """
     A class for expanding keyword queries by leveraging semantic senses and the synonymic relations between words
@@ -49,12 +65,11 @@ class SAQE(object):
     def __init__(
             self,
             text_encoder: str = None,
-            enable_noun_phrases_from_definition: bool = False,
-            enable_hyponyms: bool = False
+            enable_hyponyms: bool = False,
+            enable_noun_phrases_from_definition: bool = False
     ):
-        self._sense_matcher = SimCSE(
-            text_encoder if text_encoder is not None else "princeton-nlp/sup-simcse-roberta-large"
-        )
+        self._sense_matcher = SimCSE("princeton-nlp/sup-simcse-roberta-large", device=DEVICE) if text_encoder is None \
+            else TextSimilarity(model_name=text_encoder)
         self._lemmatizer = WordNetLemmatizer()
         self._noun_phrase_extractor = NounPhraseExtractor()
 
@@ -126,13 +141,18 @@ class SAQE(object):
 
             if self._enable_noun_phrases_from_definition:
                 if definition:
-                    validated_synonyms_by_sense[-1]["noun_phrases_from_definition"] = \
-                        list(set(self._noun_phrase_extractor(definition)))
+                    noun_phrases_from_definition = \
+                        [i.strip() for i in list(set(self._noun_phrase_extractor(definition))) if i.strip() != ""]
+                    if noun_phrases_from_definition:
+                        validated_synonyms_by_sense[-1]["noun_phrases_from_definition"] = noun_phrases_from_definition
 
             if self._enable_hyponyms:
                 hyponyms = hyponyms_by_sense[ndx]
                 if len(hyponyms) > 0:
                     validated_synonyms_by_sense[-1]["hyponyms"] = hyponyms
+
+            if not validated_synonyms_by_sense[-1]:
+                del sense_representations[-1]
 
         # retain the list of expansion terms corresponding to the sense that is most semantically similar to the
         # keyword in the context of the query
