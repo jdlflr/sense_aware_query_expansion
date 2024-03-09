@@ -29,7 +29,7 @@ import json
 from saqe import SAQE
 
 
-original_query = "The foreign policy of the United States in West Africa."
+original_query = "the foreign policy of the United States"
 query_expander = SAQE()
 
 print('ORIGINAL QUERY:')
@@ -45,29 +45,23 @@ print(json.dumps(expansion_terms['by_term'], indent=4))
 ## Output
 ```text
 ORIGINAL QUERY:
-United States foreign policy
+the foreign policy of the United States
 ```
 
 ```text
 ORIGINAL QUERY EXPANDED WITH SYNONYMS
-United States foreign policy united Department of State DoS State State Department United States Department of State
+the foreign policy of the United States U.S. U.S. government US Government United States government
 ```
 
 ```text
 SYNONYMS ORGANIZED BY QUERY TERMS
 {
-    "United": {
+    "United States": {
         "synonyms": [
-            "united"
-        ]
-    },
-    "States": {
-        "synonyms": [
-            "Department of State",
-            "DoS",
-            "State",
-            "State Department",
-            "United States Department of State"
+            "U.S.",
+            "U.S. government",
+            "US Government",
+            "United States government"
         ]
     }
 }
@@ -79,7 +73,7 @@ import json
 from saqe import SAQE
 
 
-original_query = "United States foreign policy"
+original_query = "the foreign policy of the United States"
 query_expander = SAQE(enable_hyponyms=True)
 
 print('ORIGINAL QUERY:')
@@ -95,34 +89,17 @@ print(json.dumps(expansion_terms['by_term'], indent=4))
 ## Output
 ```text
 ORIGINAL QUERY:
-United States foreign policy
+the foreign policy of the United States
 ```
 
 ```text
 ORIGINAL QUERY EXPANDED WITH SYNONYMS AND HYPONYMS
-United States foreign policy united Department of State DoS State State Department United States Department of State foggy bottom brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine
+the foreign policy of the United States brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine U.S. U.S. government US Government United States government
 ```
 
 ```text
 SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS
 {
-    "United": {
-        "synonyms": [
-            "united"
-        ]
-    },
-    "States": {
-        "synonyms": [
-            "Department of State",
-            "DoS",
-            "State",
-            "State Department",
-            "United States Department of State"
-        ],
-        "hyponyms": [
-            "foggy bottom"
-        ]
-    },
     "foreign policy": {
         "hyponyms": [
             "brinkmanship",
@@ -137,6 +114,14 @@ SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS
             "trade policy",
             "truman doctrine"
         ]
+    },
+    "United States": {
+        "synonyms": [
+            "U.S.",
+            "U.S. government",
+            "US Government",
+            "United States government"
+        ]
     }
 }
 ```
@@ -147,7 +132,7 @@ import json
 from saqe import SAQE
 
 
-original_query = "United States foreign policy"
+original_query = "the foreign policy of the United States"
 query_expander = SAQE(enable_hyponyms=True, enable_noun_phrases_from_definition=True)
 
 print('ORIGINAL QUERY:')
@@ -163,43 +148,17 @@ print(json.dumps(expansion_terms['by_term'], indent=4))
 # Output
 ```text
 ORIGINAL QUERY:
-United States foreign policy
+the foreign policy of the United States
 ```
 
 ```text
 ORIGINAL QUERY EXPANDED WITH SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS
-United States foreign policy united single entity unity Department of State DoS State State Department United States Department of State United States federal department foreign policies foggy bottom international relations policy brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine
+the foreign policy of the United States international relations policy brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine U.S. U.S. government US Government United States government United States branches executive federal government judicial branches
 ```
 
 ```text
 SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TERMS
 {
-    "United": {
-        "synonyms": [
-            "united"
-        ],
-        "noun_phrases_from_definition": [
-            "single entity",
-            "unity"
-        ]
-    },
-    "States": {
-        "synonyms": [
-            "Department of State",
-            "DoS",
-            "State",
-            "State Department",
-            "United States Department of State"
-        ],
-        "noun_phrases_from_definition": [
-            "United States",
-            "federal department",
-            "foreign policies"
-        ],
-        "hyponyms": [
-            "foggy bottom"
-        ]
-    },
     "foreign policy": {
         "noun_phrases_from_definition": [
             "international relations",
@@ -217,6 +176,21 @@ SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TE
             "regionalism",
             "trade policy",
             "truman doctrine"
+        ]
+    },
+    "United States": {
+        "synonyms": [
+            "U.S.",
+            "U.S. government",
+            "US Government",
+            "United States government"
+        ],
+        "noun_phrases_from_definition": [
+            "United States",
+            "branches",
+            "executive",
+            "federal government",
+            "judicial branches"
         ]
     }
 }
