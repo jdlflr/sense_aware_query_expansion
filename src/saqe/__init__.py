@@ -33,7 +33,10 @@ class NounPhraseExtractor(object):
             A list of noun phrases extracted from the input text.
         """
         raw_noun_phrases = TextBlob(text).noun_phrases + [i.text for i in self._spacy_parser(text).noun_chunks]
-        return [self._strip_off_leading_stop_words(noun_phrase) for noun_phrase in raw_noun_phrases]
+        raw_noun_phrases = [i for i in raw_noun_phrases if i in text]
+        noun_phrases = list(set([self._strip_off_leading_stop_words(noun_phrase) for noun_phrase in raw_noun_phrases]))
+        noun_phrases.sort()
+        return noun_phrases
 
     @staticmethod
     def _strip_off_leading_stop_words(noun_phrase: str) -> str:
@@ -47,7 +50,7 @@ class TextSimilarity(object):
     def __init__(self, model_name: str):
         self._model = HuggingFaceEmbeddings(model_name=model_name, model_kwargs={'device': DEVICE})
 
-    def similarity(self, query: str, corpus: List[str]):
+    def similarity(self, query: str, corpus: List[str]) -> List[float]:
         corpus_embeddings = self._model.embed_documents(corpus)
         query_embedding = [self._model.embed_query(query)]
         return cosine_similarity(query_embedding, corpus_embeddings)
@@ -208,7 +211,10 @@ class SAQE(object):
         """
         Formats the expansion terms as s string sequence.
         """
-        output = ""
+        expansion_terms = list()
         for term in expansion_dict:
-            output = " ".join([output, f"{' '.join([' '.join(i) for i in list(expansion_dict[term].values())])}"])
-        return output.strip()
+            expansion_term_lists = list(expansion_dict[term].values())
+            for expansion_term_list in expansion_term_lists:
+                expansion_terms += expansion_term_list
+        expansion_terms.sort()
+        return " ".join(expansion_terms)

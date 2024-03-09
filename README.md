@@ -94,12 +94,20 @@ the foreign policy of the United States
 
 ```text
 ORIGINAL QUERY EXPANDED WITH SYNONYMS AND HYPONYMS
-the foreign policy of the United States brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine U.S. U.S. government US Government United States government
+the foreign policy of the United States U.S. U.S. government US Government United States government brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine
 ```
 
 ```text
 SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS
 {
+    "United States": {
+        "synonyms": [
+            "U.S.",
+            "U.S. government",
+            "US Government",
+            "United States government"
+        ]
+    },
     "foreign policy": {
         "hyponyms": [
             "brinkmanship",
@@ -113,14 +121,6 @@ SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS
             "regionalism",
             "trade policy",
             "truman doctrine"
-        ]
-    },
-    "United States": {
-        "synonyms": [
-            "U.S.",
-            "U.S. government",
-            "US Government",
-            "United States government"
         ]
     }
 }
@@ -153,12 +153,27 @@ the foreign policy of the United States
 
 ```text
 ORIGINAL QUERY EXPANDED WITH SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS
-the foreign policy of the United States international relations policy brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine U.S. U.S. government US Government United States government United States branches executive federal government judicial branches
+the foreign policy of the United States U.S. U.S. government US Government United States United States government branches brinkmanship executive federal government imperialism international relations intervention isolationism judicial branches monroe doctrine neutralism nonaggression nonintervention policy regionalism trade policy truman doctrine
 ```
 
 ```text
 SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TERMS
 {
+    "United States": {
+        "synonyms": [
+            "U.S.",
+            "U.S. government",
+            "US Government",
+            "United States government"
+        ],
+        "noun_phrases_from_definition": [
+            "United States",
+            "branches",
+            "executive",
+            "federal government",
+            "judicial branches"
+        ]
+    },
     "foreign policy": {
         "noun_phrases_from_definition": [
             "international relations",
@@ -176,21 +191,6 @@ SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TE
             "regionalism",
             "trade policy",
             "truman doctrine"
-        ]
-    },
-    "United States": {
-        "synonyms": [
-            "U.S.",
-            "U.S. government",
-            "US Government",
-            "United States government"
-        ],
-        "noun_phrases_from_definition": [
-            "United States",
-            "branches",
-            "executive",
-            "federal government",
-            "judicial branches"
         ]
     }
 }
