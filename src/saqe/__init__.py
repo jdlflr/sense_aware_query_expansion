@@ -69,8 +69,8 @@ class TextSimilarity(object):
         """
         Computes semantic similarity between a piece of text (query) and a list of texts (corpus).
         Args:
-            query: the text to compare against all texts in the corpus.
-            corpus: the comparator texts.
+            query: [REQUIRED] the text to compare against all texts in the corpus.
+            corpus: [REQUIRED] the texts against which the query text will be compared.
 
         Returns:
             List of computed cosine similarity values. They are index matched with the corpus texts.
