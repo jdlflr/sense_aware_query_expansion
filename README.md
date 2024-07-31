@@ -26,6 +26,7 @@ python -m spacy download en_core_web_lg
 ## Use Case #1: Expand original query with synonyms
 ```python
 import json
+
 from saqe import SAQE
 
 
@@ -70,6 +71,7 @@ SYNONYMS ORGANIZED BY QUERY TERMS
 ## Use Case #2: Expand original query with synonyms and Hyponyms
 ```python
 import json
+
 from saqe import SAQE
 
 
@@ -129,6 +131,7 @@ SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS
 ## Use Case #3: Expand original query with synonyms, hyponyms, and noun phrases from query term definitions
 ```python
 import json
+
 from saqe import SAQE
 
 
