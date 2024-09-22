@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saqe"
+description = "An off-the-shelf, corpus-agnostic query expansion tool for information retrieval systems."
+version = "1.0.0"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "nltk>=3.9.1",
+    "spacy>=3.7.6",
+    "textblob>=0.18.0.post0",
+    "langchain_community>=0.3.0",
+    "sentence-transformers>=3.1.1",
+    "sentencepiece>=0.2.0",
+    "protobuf>=5.28.2"
+]
