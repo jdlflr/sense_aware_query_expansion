@@ -1,166 +1,31 @@
 # Table of Contents
  1. [About SAQE (Sense-Aware Query Expansion)](#about-saqe-sense-aware-query-expansion)
  2. [Getting Started](#getting-started)
- 3. [Code Examples](#code-examples)
-    - [Use Case #1: Expand original query with synonyms](#use-case-1-expand-original-query-with-synonyms)
-    - [Use Case #2: Expand original query with synonyms and Hyponyms](#use-case-2-expand-original-query-with-synonyms-and-hyponyms)
-    - [Use Case #3: Expand original query with synonyms, hyponyms, and noun phrases from query term definitions](#use-case-3-expand-original-query-with-synonyms-hyponyms-and-noun-phrases-from-query-term-definitions)
+ 3. [Quick Example](#quick-example)
 
 # About SAQE (Sense-Aware Query Expansion)
-`saqe` is an out-of-the-box, corpus-agnostic query expansion tool for lexical retrieval systems. It uses 
+`saqe` is an off-the-shelf, corpus-agnostic query expansion tool for information retrieval systems. It uses 
 [WordNet](https://wordnet.princeton.edu/) as its knowledge base. For word-sense disambiguation, it computes semantic 
 similarity between query embeddings and Wordnet term embeddings. The embeddings are produced using a user-inputted 
-language model (or [SimCSE](https://github.com/princeton-nlp/SimCSE) by default). Finally, it leverages `NLTK`, 
+language model (or `sentence-transformers/all-MiniLM-L12-v2` by default). Finally, it leverages `NLTK`, 
 `spaCy`, and `TextBlob` to optimize query term tokenization (the least number of non-overlapping, WordNet-meaningful 
 terms).
 
 # Getting Started
-In a Python 3.8 virtual environment, install the `saqe` package and download its required artifacts.
+In a Python 3.10 virtual environment, install the `saqe` package and download its required artifacts.
 ```shell
-python setup.py install
+pip install ./
 python -m textblob.download_corpora
 python -m spacy download en_core_web_lg
 ```
 
-# Code Examples
-## Use Case #1: Expand original query with synonyms
-```python
-import json
+# Quick Example
+For a demonstration, let's consider the queries `The foreign policy of the United States.` and `The geography of the 
+United States.`. The phrase `United States` occur in both. Note in the outputs below that `saqe` manages to expand on 
+each occurrence of `United States` in the sense of the phrase that best fits its respective parent query.
 
-from saqe import SAQE
-
-
-original_query = "the foreign policy of the United States"
-query_expander = SAQE()
-
-print('ORIGINAL QUERY:')
-print(original_query)
-
-expansion_terms = query_expander.expand(original_query)
-print('ORIGINAL QUERY EXPANDED WITH SYNONYMS')
-print(f"{original_query} {expansion_terms['as_a_string']}")
-print('SYNONYMS ORGANIZED BY QUERY TERMS')
-print(json.dumps(expansion_terms['by_term'], indent=4))
-```
-
-## Output
-```text
-ORIGINAL QUERY:
-the foreign policy of the United States
-```
-
-```text
-ORIGINAL QUERY EXPANDED WITH SYNONYMS
-the foreign policy of the United States U.S. U.S. government US Government United States government
-```
-
-```text
-SYNONYMS ORGANIZED BY QUERY TERMS
-{
-    "United States": {
-        "synonyms": [
-            "U.S.",
-            "U.S. government",
-            "US Government",
-            "United States government"
-        ]
-    }
-}
-```
-
-## Use Case #2: Expand original query with synonyms and Hyponyms
-```python
-import json
-
-from saqe import SAQE
-
-
-original_query = "the foreign policy of the United States"
-query_expander = SAQE(enable_hyponyms=True)
-
-print('ORIGINAL QUERY:')
-print(original_query)
-
-expansion_terms = query_expander.expand(original_query)
-print('ORIGINAL QUERY EXPANDED WITH SYNONYMS AND HYPONYMS')
-print(f"{original_query} {expansion_terms['as_a_string']}")
-print('SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS')
-print(json.dumps(expansion_terms['by_term'], indent=4))
-```
-
-## Output
-```text
-ORIGINAL QUERY:
-the foreign policy of the United States
-```
-
-```text
-ORIGINAL QUERY EXPANDED WITH SYNONYMS AND HYPONYMS
-the foreign policy of the United States U.S. U.S. government US Government United States government brinkmanship imperialism intervention isolationism monroe doctrine neutralism nonaggression nonintervention regionalism trade policy truman doctrine
-```
-
-```text
-SYNONYMS AND HYPONYMS ORGANIZED BY QUERY TERMS
-{
-    "United States": {
-        "synonyms": [
-            "U.S.",
-            "U.S. government",
-            "US Government",
-            "United States government"
-        ]
-    },
-    "foreign policy": {
-        "hyponyms": [
-            "brinkmanship",
-            "imperialism",
-            "intervention",
-            "isolationism",
-            "monroe doctrine",
-            "neutralism",
-            "nonaggression",
-            "nonintervention",
-            "regionalism",
-            "trade policy",
-            "truman doctrine"
-        ]
-    }
-}
-```
-
-## Use Case #3: Expand original query with synonyms, hyponyms, and noun phrases from query term definitions
-```python
-import json
-
-from saqe import SAQE
-
-
-original_query = "the foreign policy of the United States"
-query_expander = SAQE(enable_hyponyms=True, enable_noun_phrases_from_definition=True)
-
-print('ORIGINAL QUERY:')
-print(original_query)
-
-expansion_terms = query_expander.expand(original_query)
-print('ORIGINAL QUERY EXPANDED WITH SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS')
-print(f"{original_query} {expansion_terms['as_a_string']}")
-print('SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TERMS')
-print(json.dumps(expansion_terms['by_term'], indent=4))
-```
-
-# Output
-```text
-ORIGINAL QUERY:
-the foreign policy of the United States
-```
-
-```text
-ORIGINAL QUERY EXPANDED WITH SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS
-the foreign policy of the United States U.S. U.S. government US Government United States United States government branches brinkmanship executive federal government imperialism international relations intervention isolationism judicial branches monroe doctrine neutralism nonaggression nonintervention policy regionalism trade policy truman doctrine
-```
-
-```text
-SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TERMS
+#### QUERY #1: `The foreign policy of the United States.`
+```json
 {
     "United States": {
         "synonyms": [
@@ -194,6 +59,53 @@ SYNONYMS, HYPONYMS, AND NOUN PHRASES FROM TERM DEFINITIONS ORGANIZED BY QUERY TE
             "regionalism",
             "trade policy",
             "truman doctrine"
+        ]
+    }
+}
+```
+#### QUERY #2: `The geography of the United States.`
+```json
+{
+    "geography": {
+        "synonyms": [
+            "geographics"
+        ],
+        "noun_phrases_from_definition": [
+            "climate",
+            "earth's surface",
+            "people's responses",
+            "soil",
+            "study",
+            "topography",
+            "vegetation"
+        ],
+        "hyponyms": [
+            "economic geography",
+            "physical geography",
+            "topography"
+        ]
+    },
+    "United States": {
+        "synonyms": [
+            "America",
+            "U.S.",
+            "U.S.A.",
+            "US",
+            "USA",
+            "United States of America",
+            "the States"
+        ],
+        "noun_phrases_from_definition": [
+            "48 conterminous states",
+            "50 states",
+            "Alaska",
+            "Hawaiian Islands",
+            "North America",
+            "North American republic",
+            "Pacific Ocean",
+            "conterminous states",
+            "independence",
+            "northwest North America"
         ]
     }
 }
