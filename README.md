@@ -21,7 +21,7 @@ python -m spacy download en_core_web_lg
 
 # Quick Example
 For a demonstration, let's consider the queries `The foreign policy of the United States.` and `The geography of the 
-United States.`. The phrase `United States` occur in both. 
+United States.`. The phrase `United States` occurs in both. 
 
 ```python
 import json
