@@ -21,8 +21,32 @@ python -m spacy download en_core_web_lg
 
 # Quick Example
 For a demonstration, let's consider the queries `The foreign policy of the United States.` and `The geography of the 
-United States.`. The phrase `United States` occur in both. Note in the outputs below that `saqe` manages to expand on 
-each occurrence of `United States` in the sense of the phrase that best fits its respective parent query.
+United States.`. The phrase `United States` occur in both. 
+
+```python
+import json
+
+from saqe.expanders import SAQE
+
+
+query_expander = SAQE(
+    text_encoder_name="sentence-transformers/all-MiniLM-L12-v2",
+    enable_hyponyms=True,
+    enable_noun_phrases_from_definition=True
+)
+
+# QUERY #1
+expansion_terms = query_expander.expand("The foreign policy of the United States.")
+print(json.dumps(expansion_terms, indent=4))
+
+# QUERY #2
+expansion_terms = query_expander.expand("The geography of the United States.")
+print(json.dumps(expansion_terms, indent=4))
+```
+
+Note in the outputs below that `saqe` manages to expand on each occurrence of `United States` in the sense that best 
+fits the context of its parent query, in the sense of `the government of the United States` and in the sense of 
+`United States, the place` respectively.
 
 #### QUERY #1: `The foreign policy of the United States.`
 ```json
