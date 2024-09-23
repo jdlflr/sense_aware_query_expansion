@@ -4,12 +4,12 @@
  3. [Quick Example](#quick-example)
 
 # About SAQE (Sense-Aware Query Expansion)
-`saqe` is an off-the-shelf, corpus-agnostic query expansion tool for information retrieval systems. It uses 
-[WordNet](https://wordnet.princeton.edu/) as its knowledge base. For word-sense disambiguation, it computes semantic 
-similarity between query embeddings and Wordnet term embeddings. The embeddings are produced using a user-inputted 
-language model (or `sentence-transformers/all-MiniLM-L12-v2` by default). Finally, it leverages `NLTK`, 
-`spaCy`, and `TextBlob` to optimize query term tokenization (the least number of non-overlapping, WordNet-meaningful 
-terms).
+`saqe` is an off-the-shelf, corpus-agnostic [query expansion](https://en.wikipedia.org/wiki/Query_expansion) tool 
+for information retrieval systems. It uses [WordNet](https://wordnet.princeton.edu/) as its knowledge base. For 
+word-sense disambiguation, it computes semantic similarity between query embeddings and Wordnet term embeddings. 
+The embeddings are produced using a user-inputted language model (or `sentence-transformers/all-MiniLM-L12-v2` 
+by default). Finally, it leverages `NLTK`, `spaCy`, and `TextBlob` to optimize query term tokenization (the 
+least number of non-overlapping, WordNet-meaningful terms).
 
 # Getting Started
 In a Python 3.10 virtual environment, install the `saqe` package and download its required artifacts.
