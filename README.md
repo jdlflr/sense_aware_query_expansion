@@ -54,10 +54,11 @@ fits the context of its parent query, in the sense of `the government of the Uni
     "United States": {
         "synonyms": [
             "U.S.",
-            "U.S. government",
-            "US Government",
-            "United States government"
+            "U.S._government",
+            "US_Government",
+            "United_States_government"
         ],
+        "hyponyms": [],
         "noun_phrases_from_definition": [
             "United States",
             "branches",
@@ -67,22 +68,25 @@ fits the context of its parent query, in the sense of `the government of the Uni
         ]
     },
     "foreign policy": {
-        "noun_phrases_from_definition": [
-            "international relations",
-            "policy"
-        ],
+        "synonyms": [],
         "hyponyms": [
             "brinkmanship",
             "imperialism",
             "intervention",
             "isolationism",
+            "manifest destiny",
             "monroe doctrine",
             "neutralism",
             "nonaggression",
             "nonintervention",
+            "open-door policy",
             "regionalism",
             "trade policy",
             "truman doctrine"
+        ],
+        "noun_phrases_from_definition": [
+            "international relations",
+            "policy"
         ]
     }
 }
@@ -94,6 +98,12 @@ fits the context of its parent query, in the sense of `the government of the Uni
         "synonyms": [
             "geographics"
         ],
+        "hyponyms": [
+            "economic geography",
+            "physical geography",
+            "topography",
+            "topology"
+        ],
         "noun_phrases_from_definition": [
             "climate",
             "earth's surface",
@@ -102,11 +112,6 @@ fits the context of its parent query, in the sense of `the government of the Uni
             "study",
             "topography",
             "vegetation"
-        ],
-        "hyponyms": [
-            "economic geography",
-            "physical geography",
-            "topography"
         ]
     },
     "United States": {
@@ -116,9 +121,10 @@ fits the context of its parent query, in the sense of `the government of the Uni
             "U.S.A.",
             "US",
             "USA",
-            "United States of America",
-            "the States"
+            "United_States_of_America",
+            "the_States"
         ],
+        "hyponyms": [],
         "noun_phrases_from_definition": [
             "48 conterminous states",
             "50 states",
