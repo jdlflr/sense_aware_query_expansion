@@ -1,5 +1,8 @@
+from collections import defaultdict
+from copy import deepcopy
 import re
 from typing import List, Dict, Tuple
+import json
 
 import nltk
 from nltk.corpus import wordnet, stopwords
@@ -76,48 +79,109 @@ class SAQE(object):
             or hyponyms)
         """
         expansion_terms = dict()
-        sense_representations = list()
-        validated_synonyms_by_sense = list()
-
-        definitions = list()
-        hyponyms_by_sense = list()
-        for sense in wordnet.synsets(keyword):
-            definitions.append(sense.definition())
-            hyponyms_by_sense.append([re.sub("_", " ", i.name().split(".")[0]) for i in sense.hyponyms()])
-        raw_synonyms_by_sense = wordnet.synonyms(keyword)
-        for ndx, definition in enumerate(definitions):
-            synonyms = [re.sub("_", " ", s) for s in raw_synonyms_by_sense[ndx] if s != ""]
-            sense_representations.append(" ".join([definition, " ".join(synonyms)]).strip())
-            if not sense_representations[-1]:
-                continue
-            validated_synonyms_by_sense.append(dict())
-            if len(synonyms) > 0:
-                validated_synonyms_by_sense[-1]["synonyms"] = synonyms
-
-            if self._enable_noun_phrases_from_definition:
-                if definition:
-                    noun_phrases_from_definition = \
-                        [i.strip() for i in list(set(self._noun_phrase_extractor(definition))) if i.strip() != ""]
-                    if noun_phrases_from_definition:
-                        validated_synonyms_by_sense[-1]["noun_phrases_from_definition"] = noun_phrases_from_definition
-
+        senses = self._senses(keyword=keyword)
+        if senses:
+            selected_sense_index = 0
+            if senses and len(senses) > 1:
+                sense_representations = [
+                    self._sense_representation(i) if self._sense_representation(i) else "-" for i in senses
+                ]
+                selected_sense_index = self._sense_disambiguator.similarity(anchor_text=query, senses=sense_representations)
+            expansion_terms["synonyms"] = senses[selected_sense_index]["synonyms"]
             if self._enable_hyponyms:
-                hyponyms = hyponyms_by_sense[ndx]
-                if len(hyponyms) > 0:
-                    validated_synonyms_by_sense[-1]["hyponyms"] = hyponyms
-
-            if not validated_synonyms_by_sense[-1]:
-                del sense_representations[-1]
-
-        # retain the list of expansion terms corresponding to the sense that is most semantically similar to the
-        # keyword in the context of the query
-        if len(sense_representations) > 0:
-            expansion_terms = validated_synonyms_by_sense[
-                self._sense_disambiguator.similarity(anchor_text=query, senses=sense_representations) if len(
-                    sense_representations) > 1 else 0
-            ]
-            [expansion_terms[k].sort() for k in expansion_terms]
+                expansion_terms["hyponyms"] = senses[selected_sense_index]["hyponyms"]
+            if self._enable_noun_phrases_from_definition:
+                expansion_terms["noun_phrases_from_definition"] = \
+                    senses[selected_sense_index]["noun_phrases_from_definition"]
         return expansion_terms
+
+    def _senses(self, keyword: str) -> List[Dict[str, List[str]]]:
+        """
+        For each available sense of the keyword, collects synonyms, hyponyms, and their corresponding definitions from
+        WordNet.
+        Args:
+            keyword: The term to collect potential expansion terms for.
+
+        Returns:
+            List of dictionaries, each corresponding to a sense of the inputted keyword in the format:
+            {
+                "direct_definition": [<definition of the sense>],
+                "synonyms": [synonym_1, synonym_2, ...],
+                "hyponyms": [hyponym_1, hyponym_2, ...],
+                "definitions": [hyponym_definition_1, hyponym_definition_2, ...],
+                "noun_phrases_from_definition": [noun_phrase_1, noun_phrase_2, ...]
+            }
+        """
+        senses = list()
+        for sense_index, sense in enumerate(wordnet.synsets(keyword)):
+            sense_dict = defaultdict(list)
+            sense_dict["direct_definition"].append(sense.definition().strip())
+            sense_dict["synonyms"] += wordnet.synonyms(keyword)[sense_index]
+            sense_dict["unprocessed"] += list(set([i.name() for i in sense.hyponyms()]))
+            sense_dict["hyponyms"] += list(set([self._word_from_sysnet_name(i.name()) for i in sense.hyponyms()]))
+            while sense_dict["unprocessed"]:
+                unprocessed = deepcopy(sense_dict["unprocessed"])
+                for item in unprocessed:
+                    sense_dict["unprocessed"] = list(
+                        set(
+                            sense_dict["unprocessed"] + [i.name() for i in wordnet.synset(item).hyponyms()]
+                        ).difference(set(sense_dict["processed"]))
+                    )
+                    sense_dict["unprocessed"].remove(item)
+                    sense_dict["processed"].append(item)
+                    sense_dict["hyponyms"] = list(
+                        set(
+                            sense_dict["hyponyms"] +
+                            [self._word_from_sysnet_name(i.name()) for i in wordnet.synset(item).hyponyms()]
+                        )
+                    )
+            del sense_dict["unprocessed"]
+            for key in sense_dict:
+                sense_dict[key].sort()
+            sense_dict["definitions"] += list(
+                set(
+                    [
+                        wordnet.synset(i).definition().strip() for i in sense_dict["processed"] if
+                        wordnet.synset(i).definition().strip()
+                    ]
+                )
+            )
+            del sense_dict["processed"]
+            if sense_dict["direct_definition"]:
+                sense_dict["noun_phrases_from_definition"] += self._noun_phrase_extractor(
+                    sense_dict["direct_definition"][0]
+                )
+            senses.append(sense_dict)
+        return senses
+
+    @staticmethod
+    def _word_from_sysnet_name(name: str) -> str:
+        """
+        Extracts the word from the WordNet name.
+        Args:
+            name: the WordNet name.
+
+        Returns:
+            The term corresponding to the inputted WordNet name.
+        """
+        return name.split(".")[0].replace("_", " ")
+
+    @staticmethod
+    def _sense_representation(syn_hyp_def: Dict[str, List[str]]) -> str:
+        """
+        Concatenates the definition of the sense with the synonyms, hyponyms, and their corresponding definitions.
+        Args:
+            syn_hyp_def: dictionary structure as an element in the list outputted by self._senses
+
+        Returns:
+            String consisting of the definition of the sense, the synonyms, the hyponyms, and their corresponding
+            definitions.
+        """
+        output = " ".join(syn_hyp_def["direct_definition"]).strip()
+        output += f' {" ".join(syn_hyp_def["synonyms"] + syn_hyp_def["hyponyms"])}'
+        output = output.strip()
+        output += f' {" ".join(syn_hyp_def["definitions"])}'
+        return output.strip()
 
     def _tokenize_terms(self, query: str) -> Tuple[List[str], List[str]]:
         """
@@ -145,8 +209,8 @@ class SAQE(object):
                 validated_query_keywords.append(keyword)
 
         # apply WordNet formatting
-        wordnet_formatted_validated_query_keywords = [re.sub("[\- ]", "_", i) for i in validated_query_keywords]
-        wordnet_formatted_tokenized_query_phrases = [re.sub("[\- ]", "_", i) for i in tokenized_query_phrases]
+        wordnet_formatted_validated_query_keywords = [re.sub("[- ]", "_", i) for i in validated_query_keywords]
+        wordnet_formatted_tokenized_query_phrases = [re.sub("[- ]", "_", i) for i in tokenized_query_phrases]
 
         return validated_query_keywords + tokenized_query_phrases, \
             wordnet_formatted_validated_query_keywords + wordnet_formatted_tokenized_query_phrases

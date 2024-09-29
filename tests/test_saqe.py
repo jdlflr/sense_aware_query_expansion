@@ -13,10 +13,11 @@ class SAQETestCase(unittest.TestCase):
                     "United States": {
                         "synonyms": [
                             "U.S.",
-                            "U.S. government",
-                            "US Government",
-                            "United States government"
+                            "U.S._government",
+                            "US_Government",
+                            "United_States_government"
                         ],
+                        "hyponyms": [],
                         "noun_phrases_from_definition": [
                             "United States",
                             "branches",
@@ -26,22 +27,25 @@ class SAQETestCase(unittest.TestCase):
                         ]
                     },
                     "foreign policy": {
-                        "noun_phrases_from_definition": [
-                            "international relations",
-                            "policy"
-                        ],
+                        "synonyms": [],
                         "hyponyms": [
                             "brinkmanship",
                             "imperialism",
                             "intervention",
                             "isolationism",
+                            "manifest destiny",
                             "monroe doctrine",
                             "neutralism",
                             "nonaggression",
                             "nonintervention",
+                            "open-door policy",
                             "regionalism",
                             "trade policy",
                             "truman doctrine"
+                        ],
+                        "noun_phrases_from_definition": [
+                            "international relations",
+                            "policy"
                         ]
                     }
                 },
@@ -49,6 +53,12 @@ class SAQETestCase(unittest.TestCase):
                     "geography": {
                         "synonyms": [
                             "geographics"
+                        ],
+                        "hyponyms": [
+                            "economic geography",
+                            "physical geography",
+                            "topography",
+                            "topology"
                         ],
                         "noun_phrases_from_definition": [
                             "climate",
@@ -58,11 +68,6 @@ class SAQETestCase(unittest.TestCase):
                             "study",
                             "topography",
                             "vegetation"
-                        ],
-                        "hyponyms": [
-                            "economic geography",
-                            "physical geography",
-                            "topography"
                         ]
                     },
                     "United States": {
@@ -72,9 +77,10 @@ class SAQETestCase(unittest.TestCase):
                             "U.S.A.",
                             "US",
                             "USA",
-                            "United States of America",
-                            "the States"
+                            "United_States_of_America",
+                            "the_States"
                         ],
+                        "hyponyms": [],
                         "noun_phrases_from_definition": [
                             "48 conterminous states",
                             "50 states",
@@ -95,10 +101,10 @@ class SAQETestCase(unittest.TestCase):
             self.assertEqual(o, s.expand(i))
 
 
-class TextSimilarityTestCase(unittest.TestCase):
+class SenseDisambiguatorTestCase(unittest.TestCase):
     def test_similarity(self):
         inputs_and_expected_outputs = [({"anchor_text": "positive", "senses": ["subpar", "superb"]}, 1)]
-        ts = SenseDisambiguator(text_encoder_name="prajjwal1/bert-tiny")
+        ts = SenseDisambiguator(text_encoder_name="sentence-transformers/all-MiniLM-L12-v2")
         for (i, o) in inputs_and_expected_outputs:
             self.assertEqual(o, ts.similarity(**i))
 
